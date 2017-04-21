@@ -1,0 +1,38 @@
+.la-input {
+    font-size: 2em;
+    label {
+        display: block;
+        position: relative;
+        margin-top: 1em;
+    }
+    input {
+        border-color: #333333;
+        border-width: 0 0 2px 0;
+        font-size: 1em;
+        width: 50%;
+    }
+    .label {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        color: #999999;
+        transition: all 250ms ease-out;
+    }
+    .count {
+        position: absolute;
+        left: 0;
+        bottom: -1.25em;
+        font-size: 0.60em;
+        display: block;
+    }
+    input.used  + .label,
+    input:focus + .label{
+        top: 0;
+        transform: translateY(-50%);
+        font-size: 0.70em;
+        color: #666666;
+    }
+    label:focus + .label + .count {
+        display: block;
+    }
+}

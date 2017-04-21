@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Oswald|Raleway" rel="stylesheet">
+    <link rel="stylesheet" href="node_modules/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="styles/css/localadventures.css">
+    <title>Local Adventures</title>
+</head>
+<body>
+    <div id="localadventure">
+        <nav>
+            <ul>
+                <li>
+                    <a href="#1"><button><i class="fa fa-fw fa-info"></i>Información esencial</button></a>
+                    <ul>
+                        <li><a href="#2"><button>Idioma</button></a></li>
+                        <li><a href="#3"><button>Categoria</button></a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#4"><button><i class="fa fa-fw fa-file-image-o"></i>{{ adventure.title || 'Página de la aventura' }}</button></a>
+                    <ul>
+                        <li><a href="#5"><button>Título de la aventura</button></a></li>
+                        <li><a href="#6"><button>Hora</button></a></li>
+                        <li><a href="#7"><button>Descripción</button></a></li>
+                        <li><a href="#8"><button>Fotos</button></a></li>
+                        <li><a href="#9"><button>Qué haremos</button></a></li>
+                        <li><a href="#10"><button>Dónde estaremos</button></a></li>
+                        <li><a href="#11"><button>Dónde nos encontraremos</button></a></li>
+                        <li><a href="#12"><button>Qué incluiré</button></a></li>
+                        <li><a href="#13"><button>Notas</button></a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#14"><button><i class="fa fa-fw fa-paint-brush"></i>Últimos retoques</button></a>
+                    <ul>
+                        <li><a href="#15"><button>Sobre tí</button></a></li>
+                        <li><a href="#16"><button>Requisitos para huéspedes</button></a></li>
+                        <li><a href="#17"><button>Tamaño del grupo</button></a></li>
+                        <li><a href="#18"><button>Precio</button></a></li>
+                        <li><a href="#19"><button>Reservas</button></a></li>
+                        <li><a href="#20"><button>Información adicional</button></a></li>
+                        <li><a href="#21"><button>Qué llevar</button></a></li>
+                    </ul>
+                </li>
+                <li><a href="#22"><button><i class="fa fa-fw fa-check"></i>Evaluar y enviar</button></a></li>
+            </ul>
+
+            <img class="logo" src="assets/img/logo_icon.png">
+        </nav>
+
+        <aside id="header">
+            {{ adventure.title }}
+            <span>Guardar y salir</span>
+        </aside>
+
+        <main>
+            <section id="1">
+                <h1>Crea tu aventura</h1>
+                <p>Eres un importante miembro de la comunidad de Local Adventures. Tenemos muchísimas ganas de que nos cuentes qué se te da bien, qué te gusta crear y, sobre todo, de compartir este espacio contigo para organizar aventuras inolvidables para viajeros de todo el mundo.</p>
+                <hr>
+                <a href="#2"><button>Siguiente</button></a>
+            </section>
+
+            <section id="2">
+                <h2>¿En qué idioma será la aventura?</h2>
+                <p>Tendrás que escribir las descripciones en este idioma y los participantes contarán con que lo hables durante las experiencias.</p>
+
+                <select v-model="adventure.language">
+                    <option disabled selected value="">Idioma</option>
+                    <option v-for="language in languages" v-bind:value="language.value">{{language.label}}</option>
+                </select>
+
+                <h3>¿Se te dan bien otros idiomas?</h3>
+                <p>Podrás añadir otro idioma más adelante.</p>
+
+                <p>
+                    <label>
+                        <input type="checkbox" v-model="adventure.langNotification">
+                        Recibir un aviso cuando pueda añadir otro idioma
+                    </label>
+                </p>
+
+                <hr>
+                <a href="#3"><button>Siguiente</button></a>
+            </section>
+
+            <section id="3">
+                <h2>¿Qué tipo de aventura vas a organizar?</h2>
+                <p>Elige la categoría que mejor describe tu aventura. Si crees que hay alguna más que también resulta adecuada, puedes añadir otra.</p>
+
+                <select v-model="adventure.category1">
+                    <option disabled selected value="">Categoría</option>
+                    <option v-for="category in categories" v-bind:value="category.value">{{category.label}}</option>
+                </select>
+
+                <div v-if="adventure.category1">
+                    <p class="click" v-if="!switches.secondaryCategory" @click="enableSecondaryCategory">+ Añadir una categoría secundaria (opcional)</p>
+
+                    <div v-if="switches.secondaryCategory">
+                        <h3>Categoría secundaria (opcional)</h3>
+                        <p class="click" @click="disableSecondaryCategory">Eliminar</p>
+                        <select v-model="adventure.category2">
+                            <option disabled selected value="">Categoría secundaria</option>
+                            <option v-if="category.value != adventure.category1" v-for="category in categories" v-bind:value="category.value">{{category.label}}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <hr>
+
+                <h3>¿Se trata de una aventura solidaria?</h3>
+                <p>Si eres socio de una organización benéfica o sin ánimo de lucro, puedes crear una aventura solidaria. Para hacerlo, dicha organización tendrá que completar un proceso de verificación con nuestro socio TechSoup.</p>
+
+                <p>
+                    <label>
+                        <input type="checkbox" v-model="adventure.solidary">
+                        Sí, se trata de una aventura solidaria.
+                    </label>
+                </p>
+
+                <div v-if="adventure.solidary">
+                    <h3>¿Has iniciado sesión en la cuenta correcta?</h3>
+                    <p>El método de pago tiene que estar dirigido a la organización sin ánimo de lucro y no se puede cambiar una vez que la experiencia aparezca publicada.</p>
+                    <p>Estas loggeado como: <i class="fa fa-user"></i> Ismael</p>
+                    <p>
+                        <label>
+                            <input type="checkbox" v-model="adventure.solidaryConfirm">
+                            Esta es la cuenta correcta y no mi cuenta personal de Local Adventures
+                        </label>
+                    </p>
+                </div>
+
+                <hr>
+                <a href="#4"><button>Siguiente</button></a>
+            </section>
+
+            <section id="4">
+                <h1>Crea la página que verán los viajeros</h1>
+                <p>Utiliza la vista previa que aparece a la derecha para revisar cómo se mostrará tu aventura a los viajeros. A medida que describas la aventura los cambios irán apareciendo en la vista previa.</p>
+                <p>Escribe de forma clara, directa y cercana. Te daremos consejos sobre cómo resaltar tu personalidad y redactar descripciones concretas.</p>
+
+                <hr>
+                <a href="#5"><button>Siguiente</button></a>
+            </section>
+
+            <section id="5">
+                <h2>¿Cómo se llama tu aventura?</h2>
+                <p>Escribe algo corto pero descriptivo</p>
+
+                <la-input label="Título" max="24" min="10" required="true" v-model="adventure.title"></la-input>
+
+                <hr>
+                <a href="#6"><button>Siguiente</button></a>
+            </section>
+
+            <section id="6">
+                <h2>Duración de la aventura</h2>
+                <p>Podrás precisar la hora más adelante en función de las fechas en las que organices la experiencia. Cada experiencia debe tener una duración mínima de 2 horas.</p>
+                <p>de</p>
+                <select v-model="adventure.time.start">
+                    <option value="" selected disabled>Hora de inicio</option>
+                    <option value="0">12:00am CDT</option>
+                    <option value="30">12:30am CDT</option>
+                    <option value="60">1:00am CDT</option>
+                    <option value="90">1:30am CDT</option>
+                    <option value="120">2:00am CDT</option>
+                    <option value="150">2:30am CDT</option>
+                    <option value="180">3:00am CDT</option>
+                    <option value="210">3:30am CDT</option>
+                    <option value="240">4:00am CDT</option>
+                    <option value="270">4:30am CDT</option>
+                    <option value="300">5:00am CDT</option>
+                    <option value="330">5:30am CDT</option>
+                    <option value="360">6:00am CDT</option>
+                    <option value="390">6:30am CDT</option>
+                    <option value="420">7:00am CDT</option>
+                    <option value="450">7:30am CDT</option>
+                    <option value="480">8:00am CDT</option>
+                    <option value="510">8:30am CDT</option>
+                    <option value="540">9:00am CDT</option>
+                    <option value="570">9:30am CDT</option>
+                    <option value="600">10:00am CDT</option>
+                    <option value="630">10:30am CDT</option>
+                    <option value="660">11:00am CDT</option>
+                    <option value="690">11:30am CDT</option>
+                    <option value="720">12:00pm CDT</option>
+                    <option value="750">12:30pm CDT</option>
+                    <option value="780">1:00pm CDT</option>
+                    <option value="810">1:30pm CDT</option>
+                    <option value="840">2:00pm CDT</option>
+                    <option value="870">2:30pm CDT</option>
+                    <option value="900">3:00pm CDT</option>
+                    <option value="930">3:30pm CDT</option>
+                    <option value="960">4:00pm CDT</option>
+                    <option value="990">4:30pm CDT</option>
+                    <option value="1020">5:00pm CDT</option>
+                    <option value="1050">5:30pm CDT</option>
+                    <option value="1080">6:00pm CDT</option>
+                    <option value="1110">6:30pm CDT</option>
+                    <option value="1140">7:00pm CDT</option>
+                    <option value="1170">7:30pm CDT</option>
+                    <option value="1200">8:00pm CDT</option>
+                    <option value="1230">8:30pm CDT</option>
+                    <option value="1260">9:00pm CDT</option>
+                    <option value="1290">9:30pm CDT</option>
+                    <option value="1320">10:00pam CDT</option>
+                    <option value="1350">10:30pm CDT</option>
+                    <option value="1380">11:00pm CDT</option>
+                    <option value="1410">11:30pm CDT</option>
+                </select>
+                <p>a</p>
+                <select v-model="adventure.time.end">
+                    <option value="" selected disabled>Hora de fin</option>
+                    <option v-if="0 > adventure.time.start" value="0">12:00am CDT</option>
+                    <option v-if="30 > adventure.time.start" value="30">12:30am CDT</option>
+                    <option v-if="60 > adventure.time.start" value="60">1:00am CDT</option>
+                    <option v-if="90 > adventure.time.start" value="90">1:30am CDT</option>
+                    <option v-if="120 > adventure.time.start" value="120">2:00am CDT</option>
+                    <option v-if="150 > adventure.time.start" value="150">2:30am CDT</option>
+                    <option v-if="180 > adventure.time.start" value="180">3:00am CDT</option>
+                    <option v-if="210 > adventure.time.start" value="210">3:30am CDT</option>
+                    <option v-if="240 > adventure.time.start" value="240">4:00am CDT</option>
+                    <option v-if="270 > adventure.time.start" value="270">4:30am CDT</option>
+                    <option v-if="300 > adventure.time.start" value="300">5:00am CDT</option>
+                    <option v-if="330 > adventure.time.start" value="330">5:30am CDT</option>
+                    <option v-if="360 > adventure.time.start" value="360">6:00am CDT</option>
+                    <option v-if="390 > adventure.time.start" value="390">6:30am CDT</option>
+                    <option v-if="420 > adventure.time.start" value="420">7:00am CDT</option>
+                    <option v-if="450 > adventure.time.start" value="450">7:30am CDT</option>
+                    <option v-if="480 > adventure.time.start" value="480">8:00am CDT</option>
+                    <option v-if="510 > adventure.time.start" value="510">8:30am CDT</option>
+                    <option v-if="540 > adventure.time.start" value="540">9:00am CDT</option>
+                    <option v-if="570 > adventure.time.start" value="570">9:30am CDT</option>
+                    <option v-if="600 > adventure.time.start" value="600">10:00am CDT</option>
+                    <option v-if="630 > adventure.time.start" value="630">10:30am CDT</option>
+                    <option v-if="660 > adventure.time.start" value="660">11:00am CDT</option>
+                    <option v-if="690 > adventure.time.start" value="690">11:30am CDT</option>
+                    <option v-if="720 > adventure.time.start" value="720">12:00pm CDT</option>
+                    <option v-if="750 > adventure.time.start" value="750">12:30pm CDT</option>
+                    <option v-if="780 > adventure.time.start" value="780">1:00pm CDT</option>
+                    <option v-if="810 > adventure.time.start" value="810">1:30pm CDT</option>
+                    <option v-if="840 > adventure.time.start" value="840">2:00pm CDT</option>
+                    <option v-if="870 > adventure.time.start" value="870">2:30pm CDT</option>
+                    <option v-if="900 > adventure.time.start" value="900">3:00pm CDT</option>
+                    <option v-if="930 > adventure.time.start" value="930">3:30pm CDT</option>
+                    <option v-if="960 > adventure.time.start" value="960">4:00pm CDT</option>
+                    <option v-if="990 > adventure.time.start" value="990">4:30pm CDT</option>
+                    <option v-if="1020 > adventure.time.start" value="1020">5:00pm CDT</option>
+                    <option v-if="1050 > adventure.time.start" value="1050">5:30pm CDT</option>
+                    <option v-if="1080 > adventure.time.start" value="1080">6:00pm CDT</option>
+                    <option v-if="1110 > adventure.time.start" value="1110">6:30pm CDT</option>
+                    <option v-if="1140 > adventure.time.start" value="1140">7:00pm CDT</option>
+                    <option v-if="1170 > adventure.time.start" value="1170">7:30pm CDT</option>
+                    <option v-if="1200 > adventure.time.start" value="1200">8:00pm CDT</option>
+                    <option v-if="1230 > adventure.time.start" value="1230">8:30pm CDT</option>
+                    <option v-if="1260 > adventure.time.start" value="1260">9:00pm CDT</option>
+                    <option v-if="1290 > adventure.time.start" value="1290">9:30pm CDT</option>
+                    <option v-if="1320 > adventure.time.start" value="1320">10:00pam CDT</option>
+                    <option v-if="1350 > adventure.time.start" value="1350">10:30pm CDT</option>
+                    <option v-if="1380 > adventure.time.start" value="1380">11:00pm CDT</option>
+                    <option v-if="1410 > adventure.time.start" value="1410">11:30pm CDT</option>
+                </select>
+
+                <hr>
+                <a href="#7"><button>Siguiente</button></a>
+            </section>
+
+            <section id="7">
+                <h2>Escribe un eslogan</h2>
+                <p>Describe tu aventura de la forma más precisa posible. Utiliza una frase corta y atractiva, que empiece con un verbo, para que los viajeros sepan en qué consiste.</p>
+
+                <la-input label="Eslogan" max="50" min="0" required="false" v-model="adventure.description"></la-input>
+
+                <hr>
+                <a href="#8"><button>Siguiente</button></a>
+            </section>
+
+            <section id="8">
+                <h2>Añade fotos de tu experiencia</h2>
+                <p>Elige fotos que muestren la localización y lo que harán los viajeros. Las fotos deben tener una resolución mínima de 1440 x 2160 píxeles.</p>
+
+                <la-foto v-model="adventure.pictures[0]"></la-foto>
+
+                <la-foto v-model="adventure.pictures[1]"></la-foto>
+
+                <la-foto v-model="adventure.pictures[2]"></la-foto>
+
+                <hr>
+                <a href="#9"><button>Siguiente</button></a>
+            </section>
+
+            <section id="9">
+                <h2>¿En qué consiste la aventura?</h2>
+                <p>Cuenta a los viajeros qué haréis detalladamente. Cuanta más información proporciones, mejor.</p>
+                <la-textarea v-model="adventure.details" min="200" max="400" required="true"></la-textarea>
+                <hr>
+                <a href="#10"><button>Siguiente</button></a>
+            </section>
+
+            <section id="10">
+                <h2>¿Dónde irán?</h2>
+                <p>Enumera todos los sitios que visitarán e indica brevemente a los viajeros por qué son importantes.</p>
+                <la-textarea v-model="adventure.where" min="200" max="400" required="true"></la-textarea>
+                <hr>
+                <a href="#11"><button>Siguiente</button></a>
+            </section>
+
+            <section id="11">
+                <2>Añade un lugar de encuentro</h2>
+                <p>Indícale a los viajeros dónde se encontrarán. No se les mostrará la dirección exacta hasta que hayan realizado la reserva.</p>
+
+                <h3>Paso 1. Proporciona una dirección</h3>
+
+                <la-input label="Nombre de la ubicación" v-model="adventure.ubication.name"></la-input>
+
+                <la-input label="Dirección" v-model="adventure.ubication.address"></la-input>
+
+                <la-input label="Ciudad" v-model="adventure.ubication.city"></la-input>
+
+                <la-input label="Provincia/Estado" v-model="adventure.ubication.state"></la-input>
+
+                <la-input label="Código postal" v-model="adventure.ubication.cp"></la-input>
+
+                <h3>Paso 2: márcalo en el mapa</h3>
+
+
+                <hr>
+                <a href="#12"><button>Siguiente</button></a>
+            </section>
+
+            <section id="12">
+                <h2>Qué incluiré</h2>
+                <p>En esta página, puedes añadir más detalles sobre lo que ofreces. Por ejemplo, puedes informar a los huéspedes de que la experiencia es apta para vegetarianos.</p>
+
+                <la-includes v-for="includ in adventure.includes" v-model="includ" @delete="deleteInclude(includ)"></la-includes>
+
+                <p class="click" @click="addInclude">+ Añadir otro elemento</p>
+
+                <hr>
+                <a href="#13"><button>Siguiente</button></a>
+            </section>
+
+            <section id="13">
+                <h2>¿Qué más quieres que sepan?</h2>
+                <p>Indica todo aquello que los viajeros tengan que traer con ellos o gestionar por su cuenta, como, por ejemplo, el transporte.</p>
+                <hr>
+                <a href="#14"><button>Siguiente</button></a>
+            </section>
+
+            <section id="14">
+                <h1>Últimos retoques</h1>
+                <p>¡Un par de cosas más y estará todo listo para que lo envíes!</p>
+                <hr>
+                <a href="#15"><button>Siguiente</button></a>
+            </section>
+
+            <section id="15">
+                <h2>Preséntate</h2>
+                <hr>
+                <a href="#16"><button>Siguiente</button></a>
+            </section>
+
+            <section id="16">
+                <h2>¿Los viajeros tienen que cumplir algún requisito?</h2>
+                <hr>
+                <a href="#17"><button>Siguiente</button></a>
+            </section>
+
+            <section id="17">
+                <h2>Número máximo de viajeros</h2>
+                <hr>
+                <a href="#18"><button>Siguiente</button></a>
+            </section>
+
+            <section id="18">
+                <h2>Establece un precio por viajero</h2>
+                <hr>
+                <a href="#19"><button>Siguiente</button></a>
+            </section>
+
+            <section id="19">
+                <h2>¿Cuánto tiempo de preparación necesitas?</h2>
+                <hr>
+                <a href="#20"><button>Siguiente</button></a>
+            </section>
+
+            <section id="20">
+                <h2>Contextualiza la actividad</h2>
+                <hr>
+                <a href="#21"><button>Siguiente</button></a>
+            </section>
+
+            <section id="21">
+                <h2>Qué llevar a la experiencia</h2>
+                <hr>
+                <a href="#22"><button>Siguiente</button></a>
+            </section>
+
+            <section id="22">
+                <h1>Revisa tu experiencia por última vez</h1>
+                <p>Tú eres el único responsable de tu aventura una vez se publique en Local Adventures, así que echa un último vistazo y asegúrate de que:</p>
+                <ul>
+                    <li><p><label><input type="checkbox">Cumples los estándares de calidad de Local Adventures</label></p></li>
+                    <li><p><label><input type="checkbox">Tu aventura respeta la legislación local. Para saber más, puedes leer información sobre licencias para empresas y otra normativa local que puede afectarte.</label></p></li>
+                    <li><p><label><input type="checkbox">Aceptas las Condiciones adicionales del servicio de Local Adventures y confirmas que el contenido, las fotografías vídeos y otras imágenes corresponden con tu aventura.</label></p></li>
+                </ul>
+                <hr>
+                <a href="#"><button>Enviar</button></a>
+            </section>
+
+        </main>
+
+        <aside id="preview">
+            <img class="phone" src="assets/img/pixelphone.png">
+            <div id="previewContent">
+                <img class="header" :src="adventure.pictures[0]">
+                <h1>{{ adventure.title }}</h1>
+                <h2>{{ adventure.city }}</h2>
+                <p>{{ adventure.description }}</p>
+                <hr>
+                <p>Aventura</p>
+                <p><i class="fa fa-clock-o"></i> {{ (adventure.time.end - adventure.time.start) / 60 }} horas en total</p>
+                <hr>
+                <h3>Qué haremos</h3>
+                {{ adventure.details }}
+                <h3>Dónde estaremos</h3>
+                {{ adventure.where }}
+
+                {{ adventure }}
+            </div>
+        </aside>
+    </div>
+    <script src="node_modules/vue/dist/vue.js"></script>
+    <script src="scripts/components.js"></script>
+    <script src="scripts/localadventures.js"></script>
+</body>
+</html>

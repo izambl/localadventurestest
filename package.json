@@ -1,0 +1,15 @@
+{
+  "name": "localadventures",
+  "version": "1.0.0",
+  "description": "Exam for job application",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ismael Barragán <ismael@mabkil.com>",
+  "license": "Beerware",
+  "dependencies": {
+    "font-awesome": "^4.7.0",
+    "vue": "^2.2.6"
+  }
+}
